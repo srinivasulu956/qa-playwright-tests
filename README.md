@@ -52,8 +52,21 @@ If `BASE_URL` isn't set, Playwright builds and starts the app from a `tms-demo-a
 
 Why sessionStorage: the app keeps the login in sessionStorage, like MSAL with `cacheLocation: 'sessionStorage'`. Playwright's built-in `storageState` doesn't save sessionStorage, so the fixture saves and restores it separately.
 
-## Locator rules
+## Locators
 
-1. `getByRole`, then `getByLabel`, then `getByText`.
-2. `getByTestId` only where there's no visible text. Format: lowercase with hyphens, e.g. `load-row-1001`.
-3. Never CSS classes or element positions.
+The app supports every Playwright locator type, so use the style you prefer. `tests/locator-styles.spec.js` finds the same elements in each way:
+
+| Locator | Example |
+|---|---|
+| `getByRole` | `getByRole('button', { name: 'Create load' })` |
+| `getByLabel` | `getByLabel('Search loads')` |
+| `getByText` | `getByText('Create load', { exact: true })` |
+| `getByPlaceholder` | `getByPlaceholder('Load #, customer or city')` |
+| `getByTitle` | `getByTitle('Edit load LD-1002')` |
+| `getByAltText` | `getByAltText('TMS Demo logo')` |
+| `getByTestId` | `getByTestId('loads-create')`, `getByTestId('load-row-1001')` |
+| CSS | `#loads-create`, `.loads-page__create`, `[data-testid="loads-create"]` |
+| XPath | `xpath=//button[@id="loads-create"]` |
+| Chaining / filter | `getByRole('row').filter({ hasText: 'LD-1002' }).getByTitle('Edit load LD-1002')` |
+
+Test ids and ids are lowercase with hyphens (`page-element-identifier`). For CSS, use the app's own class names or ids. The class names MUI and Kendo generate (`css-xxxx`) change between builds.

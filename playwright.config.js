@@ -2,10 +2,13 @@ import { defineConfig, devices } from '@playwright/test';
 
 const LOCAL_APP_URL = 'http://localhost:5300';
 const baseURL = process.env.BASE_URL || LOCAL_APP_URL;
+const isDeployedApp = Boolean(process.env.BASE_URL);
+const DEPLOYED_APP_WORKERS = 2;
 
 export default defineConfig({
     testDir: './tests',
     fullyParallel: true,
+    workers: isDeployedApp ? DEPLOYED_APP_WORKERS : undefined,
     retries: process.env.CI ? 2 : 0,
     reporter: [['list'], ['html', { open: 'never' }]],
     use: {
@@ -17,7 +20,7 @@ export default defineConfig({
         { name: 'setup', testMatch: /.*\.setup\.js/ },
         { name: 'chromium', use: { ...devices['Desktop Chrome'] }, dependencies: ['setup'] },
     ],
-    webServer: process.env.BASE_URL
+    webServer: isDeployedApp
         ? undefined
         : {
               command: 'npm run build && npm run preview',
